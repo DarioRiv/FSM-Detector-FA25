@@ -6,7 +6,7 @@ entity seq_detector is
     clk   : in  std_logic;
     reset : in  std_logic;      -- asynchronous, active high
     x     : in  std_logic;      -- serial input stream
-    z     : out std_logic       -- output: 1 when 001, 010, or 110 detected (no overlap)
+    z     : out std_logic       -- output: 1 when 001, 010, or 110 detected (no hay overlap)
   );
 end entity;
 
@@ -22,9 +22,9 @@ architecture rtl of seq_detector is
 
   signal s, s_n : state_t;
 begin
-  -------------------------------------------------------------------
+
   -- State Register
-  -------------------------------------------------------------------
+
   process(clk, reset)
   begin
     if reset = '1' then
@@ -34,9 +34,8 @@ begin
     end if;
   end process;
 
-  -------------------------------------------------------------------
+
   -- Next-State and Output Logic (Moore)
-  -------------------------------------------------------------------
   process(s, x)
   begin
     z   <= '0';
@@ -59,7 +58,7 @@ begin
 
       when S01 =>
         if x='0' then s_n <= DETECT;    -- detects 010
-        else            s_n <= S11;     -- becomes 011 → suffix 11
+        else            s_n <= S11;     -- becomes 011 -> suffix 11
         end if;
 
       when S10 =>
