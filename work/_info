@@ -10,7 +10,7 @@ z2
 cModel Technology
 Z0 dC:/Users/Darkz/Documents/VS Code Projects/FSM-Detector-FA25
 Eseq_detector
-Z1 w1760080544
+Z1 w1760081054
 Z2 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
 Z3 DPx4 ieee 14 std_logic_1164 0 22 cVAk:aDinOX8^VGI1ekP<3
 !i122 0
@@ -19,13 +19,13 @@ Z4 8seq_detector.vhd
 Z5 Fseq_detector.vhd
 l0
 L4 1
-V6>WgMIz5hcle:1EF^K:zI2
-!s100 0EKW3oSbf:[7F;6faEP@_3
+V7nnlnn<XMkJGTGAd@90zQ1
+!s100 Rg^BTd4j8MLaKCTE0`[762
 Z6 OV;C;2020.1;71
 33
-Z7 !s110 1760080659
+Z7 !s110 1760081405
 !i10b 1
-Z8 !s108 1760080659.000000
+Z8 !s108 1760081405.000000
 Z9 !s90 -reportprogress|300|-2008|seq_detector.vhd|
 Z10 !s107 seq_detector.vhd|
 !i113 1
@@ -34,12 +34,12 @@ Z12 tExplicit 1 CvgOpt 0
 Artl
 R2
 R3
-Z13 DEx4 work 12 seq_detector 0 22 6>WgMIz5hcle:1EF^K:zI2
+Z13 DEx4 work 12 seq_detector 0 22 7nnlnn<XMkJGTGAd@90zQ1
 !i122 0
-l25
-L16 98
-V;ldgiB>GH4jO1nS59=kKF2
-!s100 TBn?9oSKnAXgkNMZ@>]Zj1
+l24
+L13 71
+V`5PkXFLYT?6No;AJ5Of<e1
+!s100 L7BSHQg;<`nXU^IYBcjkC0
 R6
 33
 R7
@@ -51,7 +51,7 @@ R10
 R11
 R12
 Etb_seq_detector
-Z14 w1760080557
+Z14 w1760081059
 R2
 R3
 !i122 1
@@ -78,10 +78,10 @@ R2
 R3
 DEx4 work 15 tb_seq_detector 0 22 >olMUCI79]Qz2mg7BF5P41
 !i122 1
-l16
-L7 87
-Vj4:O]DSn]62n[4:^g:1kR0
-!s100 Lh2B=OP?[=cAW5LO>lY5J1
+l14
+L7 71
+V5LVblkjjMbCSV[3ACC0:U1
+!s100 ULP0lQOAcV5k=KN1bozbe1
 R6
 33
 R7

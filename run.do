@@ -7,11 +7,10 @@ vcom -2008 tb_seq_detector.vhd
 
 vsim -voptargs=+acc work.tb_seq_detector
 
-add wave -radix binary  sim:/tb_seq_detector/clk
-add wave -radix binary  sim:/tb_seq_detector/reset
-add wave -radix binary  sim:/tb_seq_detector/x
-add wave -radix binary  sim:/tb_seq_detector/z
-add wave -radix binary  sim:/tb_seq_detector/Q
-add wave -radix binary  sim:/tb_seq_detector/P
+add wave -radix binary sim:/tb_seq_detector/clk
+add wave -radix binary sim:/tb_seq_detector/reset
+add wave -radix binary sim:/tb_seq_detector/x
+add wave -radix binary sim:/tb_seq_detector/z
+add wave -radix symbolic sim:/tb_seq_detector/dut/s   ;# state (nice to watch)
 
 run -all
