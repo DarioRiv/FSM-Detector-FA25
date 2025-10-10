@@ -1,0 +1,94 @@
+m255
+K4
+z2
+!s11e vcom 2020.1 2020.02, Feb 28 2020
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dC:/Users/Darkz/Documents/VS Code Projects/FSM-Detector-FA25
+Eseq_detector
+Z1 w1760080544
+Z2 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
+Z3 DPx4 ieee 14 std_logic_1164 0 22 cVAk:aDinOX8^VGI1ekP<3
+!i122 0
+R0
+Z4 8seq_detector.vhd
+Z5 Fseq_detector.vhd
+l0
+L4 1
+V6>WgMIz5hcle:1EF^K:zI2
+!s100 0EKW3oSbf:[7F;6faEP@_3
+Z6 OV;C;2020.1;71
+33
+Z7 !s110 1760080659
+!i10b 1
+Z8 !s108 1760080659.000000
+Z9 !s90 -reportprogress|300|-2008|seq_detector.vhd|
+Z10 !s107 seq_detector.vhd|
+!i113 1
+Z11 o-2008
+Z12 tExplicit 1 CvgOpt 0
+Artl
+R2
+R3
+Z13 DEx4 work 12 seq_detector 0 22 6>WgMIz5hcle:1EF^K:zI2
+!i122 0
+l25
+L16 98
+V;ldgiB>GH4jO1nS59=kKF2
+!s100 TBn?9oSKnAXgkNMZ@>]Zj1
+R6
+33
+R7
+!i10b 1
+R8
+R9
+R10
+!i113 1
+R11
+R12
+Etb_seq_detector
+Z14 w1760080557
+R2
+R3
+!i122 1
+R0
+Z15 8tb_seq_detector.vhd
+Z16 Ftb_seq_detector.vhd
+l0
+L4 1
+V>olMUCI79]Qz2mg7BF5P41
+!s100 6MSOY7M0hCDQ<aliER<fQ3
+R6
+33
+R7
+!i10b 1
+R8
+Z17 !s90 -reportprogress|300|-2008|tb_seq_detector.vhd|
+!s107 tb_seq_detector.vhd|
+!i113 1
+R11
+R12
+Asim
+R13
+R2
+R3
+DEx4 work 15 tb_seq_detector 0 22 >olMUCI79]Qz2mg7BF5P41
+!i122 1
+l16
+L7 87
+Vj4:O]DSn]62n[4:^g:1kR0
+!s100 Lh2B=OP?[=cAW5LO>lY5J1
+R6
+33
+R7
+!i10b 1
+R8
+R17
+Z18 !s107 tb_seq_detector.vhd|
+!i113 1
+R11
+R12

@@ -56,20 +56,28 @@ begin
         else            s_n <= S00;
         end if;
 
+      -- detect 010
       when S01 =>
-        if x='0' then s_n <= DETECT;    -- detects 010
-        else            s_n <= S11;     -- becomes 011 -> suffix 11
+        if x = '0' then
+          s_n <= DETECT;
+        else
+          s_n <= S11;       -- 011 keeps suffix 11
         end if;
-
+      
       when S10 =>
         if x='0' then s_n <= S00; else s_n <= S01; end if;
 
+      -- detect 110
       when S11 =>
-        if x='0' then s_n <= S10; else s_n <= S11; end if;
+        if x = '0' then
+          s_n <= DETECT;    -- <<< MUST be DETECT for 110
+        else
+          s_n <= S11;
+        end if;
 
       when DETECT =>
-        z   <= '1';                     -- one-cycle pulse
-        s_n <= START;                   -- no overlap: restart
+        z <= '1' when s = DETECT else '0';  -- one-cycle pulse
+        s_n <= START;                       -- no overlap: restart
     end case;
   end process;
 end architecture;
