@@ -1,3 +1,4 @@
+-- tb_seq_detector.vhd
 library ieee;
 use ieee.std_logic_1164.all;
 
@@ -5,73 +6,110 @@ entity tb_seq_detector is
 end entity;
 
 architecture sim of tb_seq_detector is
-  constant T : time := 10 ns;
-
+  -- DUT ports
   signal clk   : std_logic := '0';
   signal reset : std_logic := '0';
   signal x     : std_logic := '0';
   signal z     : std_logic;
+  signal Q     : std_logic_vector(2 downto 0);
+
+  constant Tclk : time := 10 ns; -- 100 MHz for simulation
+
+  -- expected-model bookkeeping
+  signal last2      : std_logic_vector(1 downto 0) := "00";
+  signal exp_now    : std_logic := '0';  -- combinational: does current 3-bit window match?
+  signal exp_z_pipe : std_logic := '0';  -- one-cycle delayed expected z (since DUT asserts in DETECT state)
+
+  -- stimulus bitstream covering overlaps & multiple detections:
+  -- windows hitting: 001, 010, 110 (several times)
+  constant STIM : std_logic_vector := 
+    --   0 0 1 0 1 1 0  0 1 0  1 1 0 0 1
+       "001011001011001";
+  constant N : integer := STIM'length;
 begin
-  -- DUT (clk, reset, x, z)
-  dut: entity work.seq_detector(rtl)
+  ---------------------------------------------------------------------------
+  -- Clock
+  ---------------------------------------------------------------------------
+  clk <= not clk after Tclk/2;
+
+  ---------------------------------------------------------------------------
+  -- DUT
+  ---------------------------------------------------------------------------
+  uut: entity work.seq_detector
     port map (
       clk   => clk,
       reset => reset,
       x     => x,
-      z     => z
+      z     => z,
+      Q     => Q
     );
 
-  -- 10 ns clock
-  clk <= not clk after T/2;
-
-  stimulus: process
-    -- push one input bit, then give Moore logic a moment to settle
-    procedure push(b: std_logic) is
-    begin
-      x <= b;
-      wait until rising_edge(clk);
-      wait for 1 ns;  -- avoid delta-cycle race on z
-    end procedure;
-
-    -- idle exactly one clean clock (keep x as-is)
-    procedure tick is
-    begin
-      wait until rising_edge(clk);
-      wait for 1 ns;
-    end procedure;
+  ---------------------------------------------------------------------------
+  -- Reset & stimulus drive
+  ---------------------------------------------------------------------------
+  stim_proc : process
   begin
-    -- async reset
-    reset <= '1'; wait for 7 ns; reset <= '0';
-    wait until rising_edge(clk);
-    wait for 1 ns;
+    -- hold reset for a few cycles
+    reset <= '1';
+    x     <= '0';
+    wait for 4*Tclk;
+    reset <= '0';
 
-    -- 001 -> exactly one pulse
-    push('0'); push('0'); push('1');
-    assert z='1' report "ERROR: 001 not detected" severity error;
+    -- drive the bitstream, one bit per rising edge
+    for i in 0 to N-1 loop
+      x <= STIM(i);
+      wait until rising_edge(clk);
+    end loop;
 
-    -- extra 0 must NOT create overlap (0010)
-    push('0');
-    assert z='0' report "ERROR: overlap after 0010" severity error;
+    -- let pipeline flush a couple more cycles
+    x <= '0';
+    wait for 3*Tclk;
 
-    -- >>> IMPORTANT: allow FSM to move START -> S0 before beginning 010
-    tick;  -- now the machine is in S0
-
-    -- 010 -> one pulse
-    push('1');  -- S0 -> S01
-    push('0');  -- S01 -> DETECT (z='1')
-    assert z='1' report "ERROR: 010 not detected" severity error;
-
-    -- 110 -> one pulse
-    push('1');  -- START -> S1
-    push('1');  -- S1 -> S11
-    push('0');  -- S11 -> DETECT
-    assert z='1' report "ERROR: 110 not detected" severity error;
-
-    -- ensure pulse is only 1 cycle
-    tick;
-    assert z='0' report "ERROR: z lasted > 1 cycle" severity error;
-
-    report "Non-overlap checks passed." severity note;
+    report "Simulation finished." severity note;
     wait;
   end process;
+
+  ---------------------------------------------------------------------------
+  -- Tiny golden model: detect 001, 010, 110 and compare with DUT 'z'
+  ---------------------------------------------------------------------------
+  model_chk : process(clk)
+    variable errors : integer := 0;
+  begin
+    if rising_edge(clk) then
+      if reset = '1' then
+        last2      <= "00";
+        exp_now    <= '0';
+        exp_z_pipe <= '0';
+      else
+        -- build current 3-bit window: last2 & x
+        case last2 & x is
+          when "001" | "010" | "110" => exp_now <= '1';
+          when others                 => exp_now <= '0';
+        end case;
+
+        -- z should assert one cycle AFTER detect decision (FSM goes to DETECT, then outputs)
+        exp_z_pipe <= exp_now;
+
+        -- update last two bits for next window
+        last2 <= last2(0) & x;
+
+        -- compare
+        if z /= exp_z_pipe then
+          errors := errors + 1;
+          report "Mismatch at time " & time'image(now) &
+                 "  (x=" & std_logic'image(x) &
+                 ", last2=" & std_logic'image(last2(1)) & std_logic'image(last2(0)) &
+                 ")  expected z=" & std_logic'image(exp_z_pipe) &
+                 " got z=" & std_logic'image(z)
+                 severity error;
+        end if;
+      end if;
+
+      -- stop automatically if too many errors (optional)
+      if errors > 10 then
+        report "Too many mismatches; stopping." severity failure;
+      end if;
+    end if;
+  end process;
+
 end architecture;

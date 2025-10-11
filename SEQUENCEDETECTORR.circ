@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project source="4.0.0" version="1.0">
+  This file is intended to be loaded by Logisim-evolution v4.0.0(https://github.com/logisim-evolution/).
+
+  <lib desc="#Wiring" name="0">
+    <tool name="Pin">
+      <a name="appearance" val="classic"/>
+    </tool>
+  </lib>
+  <lib desc="#Gates" name="1"/>
+  <lib desc="#Plexers" name="2"/>
+  <lib desc="#Arithmetic" name="3"/>
+  <lib desc="#Memory" name="4"/>
+  <lib desc="#I/O" name="5"/>
+  <lib desc="#TTL" name="6"/>
+  <lib desc="#TCL" name="7"/>
+  <lib desc="#Base" name="8"/>
+  <lib desc="#BFH-Praktika" name="9"/>
+  <lib desc="#Input/Output-Extra" name="10"/>
+  <lib desc="#Soc" name="11"/>
+  <main name="main"/>
+  <options>
+    <a name="gateUndefined" val="ignore"/>
+    <a name="simlimit" val="1000"/>
+    <a name="simrand" val="0"/>
+  </options>
+  <mappings>
+    <tool lib="8" map="Button2" name="Poke Tool"/>
+    <tool lib="8" map="Button3" name="Menu Tool"/>
+    <tool lib="8" map="Ctrl Button1" name="Menu Tool"/>
+  </mappings>
+  <toolbar>
+    <tool lib="8" name="Poke Tool"/>
+    <tool lib="8" name="Edit Tool"/>
+    <tool lib="8" name="Wiring Tool"/>
+    <tool lib="8" name="Text Tool"/>
+    <sep/>
+    <tool lib="0" name="Pin"/>
+    <tool lib="0" name="Pin">
+      <a name="facing" val="west"/>
+      <a name="type" val="output"/>
+    </tool>
+    <sep/>
+    <tool lib="1" name="NOT Gate"/>
+    <tool lib="1" name="AND Gate"/>
+    <tool lib="1" name="OR Gate"/>
+    <tool lib="1" name="XOR Gate"/>
+    <tool lib="1" name="NAND Gate"/>
+    <tool lib="1" name="NOR Gate"/>
+    <sep/>
+    <tool lib="4" name="D Flip-Flop"/>
+    <tool lib="4" name="Register"/>
+  </toolbar>
+  <circuit name="main">
+    <a name="appearance" val="logisim_evolution"/>
+    <a name="circuit" val="main"/>
+    <a name="circuitnamedboxfixedsize" val="true"/>
+    <a name="simulationFrequency" val="1.0"/>
+    <comp lib="0" loc="(160,150)" name="Pin">
+      <a name="appearance" val="NewPins"/>
+      <a name="label" val="reset"/>
+    </comp>
+    <comp lib="0" loc="(160,210)" name="Pin">
+      <a name="appearance" val="NewPins"/>
+      <a name="label" val="x"/>
+    </comp>
+    <comp lib="0" loc="(160,90)" name="Pin">
+      <a name="appearance" val="NewPins"/>
+      <a name="label" val="clk"/>
+    </comp>
+    <comp lib="0" loc="(460,150)" name="Pin">
+      <a name="appearance" val="NewPins"/>
+      <a name="facing" val="west"/>
+      <a name="label" val="Q"/>
+      <a name="type" val="output"/>
+      <a name="width" val="3"/>
+    </comp>
+    <comp lib="5" loc="(450,100)" name="LED">
+      <a name="label" val="z"/>
+    </comp>
+    <comp loc="(420,130)" name="seq_detector">
+      <a name="appearance" val="logisim_evolution"/>
+      <a name="label" val="detector"/>
+    </comp>
+    <wire from="(160,150)" to="(200,150)"/>
+    <wire from="(160,210)" to="(170,210)"/>
+    <wire from="(160,90)" to="(170,90)"/>
+    <wire from="(170,130)" to="(200,130)"/>
+    <wire from="(170,170)" to="(170,210)"/>
+    <wire from="(170,170)" to="(200,170)"/>
+    <wire from="(170,90)" to="(170,130)"/>
+    <wire from="(420,130)" to="(430,130)"/>
+    <wire from="(420,150)" to="(460,150)"/>
+    <wire from="(430,100)" to="(430,130)"/>
+    <wire from="(430,100)" to="(450,100)"/>
+  </circuit>
+  <vhdl name="seq_detector">library ieee;&#13;
+use ieee.std_logic_1164.all;&#13;
+&#13;
+entity seq_detector is&#13;
+  port (&#13;
+    clk   : in  std_logic;&#13;
+    reset : in  std_logic;&#13;
+    x     : in  std_logic;&#13;
+    z     : out std_logic;&#13;
+    Q     : out std_logic_vector(2 downto 0)&#13;
+  );&#13;
+end seq_detector;&#13;
+&#13;
+architecture rtl of seq_detector is&#13;
+  type state_t is (START, S0, S1, S00, S01, S10, S11, DETECT);&#13;
+  signal current_state : state_t := START;&#13;
+  signal next_state    : state_t := START;&#13;
+begin&#13;
+  -- state register (sync, active-high)&#13;
+  process(clk)&#13;
+  begin&#13;
+    if rising_edge(clk) then&#13;
+      if reset = '1' then&#13;
+        current_state &lt;= START;&#13;
+      else&#13;
+        current_state &lt;= next_state;&#13;
+      end if;&#13;
+    end if;&#13;
+  end process;&#13;
+&#13;
+  -- next-state logic&#13;
+  process(current_state, x)&#13;
+  begin&#13;
+    next_state &lt;= current_state;  -- default&#13;
+    case current_state is&#13;
+      when START =&gt;&#13;
+        if x = '0' then next_state &lt;= S0;  else next_state &lt;= S1;  end if;&#13;
+&#13;
+      when S0 =&gt;&#13;
+        if x = '0' then next_state &lt;= S00; else next_state &lt;= S01; end if;&#13;
+&#13;
+      when S1 =&gt;&#13;
+        if x = '0' then next_state &lt;= S10; else next_state &lt;= S11; end if;&#13;
+&#13;
+      when S00 =&gt;&#13;
+        if x = '1' then next_state &lt;= DETECT; else next_state &lt;= S00; end if;&#13;
+&#13;
+      when S01 =&gt;&#13;
+        if x = '0' then next_state &lt;= DETECT; else next_state &lt;= S11; end if;&#13;
+&#13;
+      when S10 =&gt;&#13;
+        if x = '0' then next_state &lt;= S00; else next_state &lt;= S01; end if;&#13;
+&#13;
+      when S11 =&gt;&#13;
+        if x = '0' then next_state &lt;= DETECT; else next_state &lt;= S11; end if;&#13;
+&#13;
+      when DETECT =&gt;&#13;
+        next_state &lt;= START;&#13;
+&#13;
+      when others =&gt;&#13;
+        next_state &lt;= START;&#13;
+    end case;&#13;
+  end process;&#13;
+&#13;
+  -- Moore output and state display&#13;
+  z &lt;= '1' when current_state = DETECT else '0';&#13;
+&#13;
+  with current_state select&#13;
+    Q &lt;= "000" when START,&#13;
+         "001" when S0,&#13;
+         "010" when S1,&#13;
+         "011" when S00,&#13;
+         "100" when S01,&#13;
+         "101" when S10,&#13;
+         "110" when S11,&#13;
+         "111" when DETECT,&#13;
+         "000" when others;&#13;
+end rtl;&#13;
+</vhdl>
+</project>
