@@ -70,7 +70,7 @@ begin
   end process;
 
   ---------------------------------------------------------------------------
-  -- Tiny golden model: detect 001, 010, 110 and compare with DUT 'z'
+  -- Detect 001, 010, 110 and compare with DUT 'z'
   ---------------------------------------------------------------------------
   model_chk : process(clk)
     variable errors : integer := 0;
