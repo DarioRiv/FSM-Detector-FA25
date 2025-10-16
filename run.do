@@ -1,31 +1,25 @@
-transcript on
-onerror {quit -code 1}
-
-vdel -lib work -all
+vdel -all
 vlib work
 vmap work work
 
-vcom -2008 seq_detector.vhd
-vcom -2008 tb_seq_detector.vhd
+vcom -2008 seq_detectorMEALY.vhd
+vcom -2008 seq_detector_tb.vhd
 
-vsim -voptargs=+acc work.tb_seq_detector
+# Elaborate (suppress Intel's auto -novopt deprecation message)
+vsim -suppress 12110 -voptargs=+acc work.seq_detector_tb
 
-# log everything and add key waves
-log -r /*
+# Don't break on asserts / errors during run
+quietly set BreakOnAssertion 0
+onbreak resume
+onerror {resume}
+onfinish stop      ;# or: onfinish quit -f
 
-add wave -radix binary  sim:/tb_seq_detector/clk
-add wave -radix binary  sim:/tb_seq_detector/reset
-add wave -radix binary  sim:/tb_seq_detector/x
-add wave -radix binary  sim:/tb_seq_detector/z
-add wave -radix binary  sim:/tb_seq_detector/Q
-
-# enum state inside UUT (note: instance name 'uut', signal 'current_state')
-add wave -radix symbolic sim:/tb_seq_detector/uut/current_state
-
-# optional: also watch the tiny checker signals if you kept them
-# add wave -radix binary sim:/tb_seq_detector/last2
-# add wave -radix binary sim:/tb_seq_detector/exp_now
-# add wave -radix binary sim:/tb_seq_detector/exp_z_pipe
+# Waves
+add wave -hex    sim:/seq_detector_tb/Q
+add wave         sim:/seq_detector_tb/clk
+add wave         sim:/seq_detector_tb/reset
+add wave         sim:/seq_detector_tb/x
+add wave         sim:/seq_detector_tb/z
+# add wave sim:/seq_detector_tb/uut/s  ;# (optional internal state)
 
 run -all
-wave zoom full
