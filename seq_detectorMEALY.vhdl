@@ -86,12 +86,12 @@ begin
   -- Present-state code to 3 LEDs 
 
   with s select
-    Q <= "000" when START,
-         "001" when S0,
-         "010" when S1,
-         "011" when S00,
-         "100" when S01,
-         "101" when S10,
-         "110" when S11,
-         "111" when others;   -- unused in this Mealy design
+  Q <= "000" when START,
+       "001" when S0,
+       "010" when S1,
+       "011" when S00,
+       "100" when S01,
+       "101" when S10,
+       "110" when S11,
+       "000" when others;  -- safe default
 end architecture rtl;
